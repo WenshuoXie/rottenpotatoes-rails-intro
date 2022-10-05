@@ -7,7 +7,47 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    #@movies = Movie.all
+    @all_ratings = Movie.all_ratings
+    # @order = params[:target]
+    if params.has_key?(:ratings)
+      @ratings_to_show = params[:ratings].keys
+      session[:ratings] = @ratings_to_show
+    elsif session.key?(:ratings)
+      params[:ratings] = session[:ratings]
+      @ratings_to_show = params[:ratings]
+      redirect = true
+    else
+      @ratings_to_show = @all_ratings
+    end
+
+    if params.has_key?(:target)
+      @target = params[:target]
+      session[:target] = @target
+    elsif session.key?(:target)
+      params[:target] = session[:target]
+      redirect = true
+    end
+    @ratings_to_show_hash = Hash[@ratings_to_show.map {|r| [r,1]}]
+    if redirect
+      redirect_to movies_path(:ratings => @ratings_to_show_hash, :target => session[:target]) and return
+    end
+    # if params[:ratings].nil?
+	  #   @ratings_to_show = []
+    # else
+    # 	@ratings_to_show = params[:ratings].keys
+    #   @ratings_to_show_hash = Hash[@ratings_to_show.map {|r| [r,1]}]
+    # end
+    @movies = Movie.with_ratings(@ratings_to_show)
+    if params[:target] != nil
+      if params[:target] == 'title'
+        @title_header = 'hilite bg-warning'
+      end
+      if params[:target] == 'release_date'
+        @release_date_header = 'hilite bg-warning'
+      end
+      @movies = @movies.order(params[:target])
+    end
   end
 
   def new

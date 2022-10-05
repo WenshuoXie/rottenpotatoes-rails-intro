@@ -22,3 +22,7 @@
   <%= link_to 'Delete', movie_path(@movie), 'data-method' => 'delete', 'data-confirm' => 'Are you sure?', :class => 'btn btn-danger col-2' %>
   <%= link_to 'Back to movie list', movies_path, :class => 'btn btn-primary col-2' %>
 </div>
+<%= debug(params[:target]) %>
+<%= debug(params[:ratings]) %>
+<%= debug(session[:target]) %>
+<%= debug(session[:ratings]) %>
